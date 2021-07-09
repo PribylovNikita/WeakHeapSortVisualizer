@@ -9,7 +9,7 @@ import java.net.URL;
 public final class MainWindow {
     private Stage primaryStage;
     private AnchorPane root;
-
+    private WeakHeap heap;
     public MainWindow(Stage stage) {
         this.primaryStage = stage;
         try{
@@ -25,5 +25,11 @@ public final class MainWindow {
         primaryStage.setTitle("Прототип");
         primaryStage.setScene(new Scene(root, 700, 400));
         primaryStage.show();
+    }
+    public int[] sort(Integer[] data){
+        heap = new WeakHeap(data);
+        heap.build();
+        heap.heapsort();
+        return heap.values;
     }
 }
