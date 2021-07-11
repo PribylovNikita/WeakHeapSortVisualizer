@@ -2,16 +2,23 @@ package sample;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class MainWindow {
     private Stage primaryStage;
     private AnchorPane root;
     private WeakHeap heap;
+    private WeakHeapSteps stepHeap;
+
     public MainWindow(Stage stage) {
         this.primaryStage = stage;
         try{
@@ -34,6 +41,17 @@ public final class MainWindow {
         heap.heapsort();
         return heap.values;
     }
+
+    public void startStepSort(Integer[] data, AnchorPane drawField, GridPane elemBox, TextArea informationArea, ArrayList<Controller.EditableButton> massButtonElem){
+        stepHeap = new WeakHeapSteps(data,elemBox, informationArea, massButtonElem);
+        WeakHeapRenderer.render(stepHeap, drawField, List.of(), Paint.valueOf("RED"));
+    }
+
+    public void stepSort(AnchorPane drawField){
+        stepHeap.step();
+        WeakHeapRenderer.render(stepHeap, drawField, List.of(), Paint.valueOf("RED"));
+    }
+
     public Stage getPrimaryStage() {
         return primaryStage;
     }
