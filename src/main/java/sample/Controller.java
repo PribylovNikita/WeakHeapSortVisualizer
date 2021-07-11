@@ -91,8 +91,8 @@ public class Controller {
     private void buttonStepPressed() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Сообщение");
-        Line line = new Line(0, 0, anchorPane.getScene().getWidth(), anchorPane.getScene().getHeight());
-        anchorPane.getChildren().add(line);
+//        Line line = new Line(0, 0, anchorPane.getScene().getWidth(), anchorPane.getScene().getHeight());
+//        anchorPane.getChildren().add(line);
         alert.setHeaderText(null);
         alert.setContentText("Нажата клавиша шага алгоритма!");
         alert.showAndWait();
