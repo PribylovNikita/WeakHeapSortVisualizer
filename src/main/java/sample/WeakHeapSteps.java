@@ -49,4 +49,11 @@ public class WeakHeapSteps extends WeakHeap {
             default -> length = initialLength;
         }
     }
+
+    @Override
+    void heapsort() {
+        while (!state.equals(State.done))
+            step();
+        length = initialLength;
+    }
 }

@@ -28,7 +28,8 @@ public final class MainWindow {
     }
     public int[] sort(Integer[] data){
         heap = new WeakHeapSteps(data);
-        heap.build();
+        while (!heap.state.equals(WeakHeapSteps.State.done))
+            heap.step();
         heap.heapsort();
         return heap.values;
     }

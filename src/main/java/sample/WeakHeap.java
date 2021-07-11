@@ -8,7 +8,7 @@ public class WeakHeap {
     // to add element -> add to the bottom and siftUp
     // to remove element -> swap with last and siftDown
 
-    WeakHeap(Integer[] data) {
+    WeakHeap(@org.jetbrains.annotations.NotNull Integer[] data) {
         this.length = data.length;
         this.values = new int[length];
         this.bits = new int[length];

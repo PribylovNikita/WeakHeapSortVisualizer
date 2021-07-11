@@ -1,10 +1,14 @@
 sample/WeakHeap.java
  sample.WeakHeap
-sample/Main.java
- sample.Main
 sample/MainWindow.java
  sample.MainWindow
 sample/Controller.java
  sample.Controller
  sample.Controller$EditableButton
  sample.Controller$EditableButton$1
+sample/Main.java
+ sample.Main
+sample/WeakHeapSteps.java
+ sample.WeakHeapSteps
+ sample.WeakHeapSteps$1
+ sample.WeakHeapSteps$State
