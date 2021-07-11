@@ -4,17 +4,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.io.File;
 import java.net.URL;
 
 public final class MainWindow {
     private Stage primaryStage;
     private AnchorPane root;
-    private WeakHeapSteps heap;
+    private WeakHeap heap;
     public MainWindow(Stage stage) {
         this.primaryStage = stage;
         try{
             FXMLLoader loader = new FXMLLoader();
-            URL xmlUrl = Main.class.getResource("/sample.fxml");
+            URL xmlUrl = Main.class.getResource("sample.fxml");
             loader.setLocation(xmlUrl);
             root = loader.load();
             Controller appController = loader.getController();
@@ -22,15 +24,25 @@ public final class MainWindow {
         } catch (Exception e) {
             System.exit(0);
         }
-        primaryStage.setTitle("Прототип");
+        primaryStage.setTitle("Сортировка слабой кучей(v:1)");
         primaryStage.setScene(new Scene(root, 700, 400));
         primaryStage.show();
     }
     public int[] sort(Integer[] data){
-        heap = new WeakHeapSteps(data);
-        while (!heap.state.equals(WeakHeapSteps.State.done))
-            heap.step();
+        heap = new WeakHeap(data);
+        heap.build();
         heap.heapsort();
         return heap.values;
+    }
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+    public String readData(File source){
+        FileIO loadFile = new FileIO(source);
+        return loadFile.readFromFile();
+    }
+    public void writeData(File destination){
+        FileIO saveFile = new FileIO(destination);
+        saveFile.writeToFile(heap.values);
     }
 }

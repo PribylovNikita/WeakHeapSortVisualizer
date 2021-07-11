@@ -1,21 +1,19 @@
 package sample;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Queue;
 import java.util.ResourceBundle;
-
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.shape.Line;
+import javafx.stage.FileChooser;
 
 public class Controller {
     private MainWindow mainwindow;
@@ -54,8 +52,6 @@ public class Controller {
     @FXML
     private TextArea informationArea;
     @FXML
-    private AnchorPane anchorPane;
-    @FXML
     void initialize() {
     }
 
@@ -82,6 +78,7 @@ public class Controller {
         }
         informationArea.setText("Данные\nотсортированы!");
         rezultButton.setDisable(true);
+        saveButton.setDisable(false);
     }
     @FXML
     private void buttonInsertPressed() {
@@ -91,27 +88,38 @@ public class Controller {
     private void buttonStepPressed() {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Сообщение");
-//        Line line = new Line(0, 0, anchorPane.getScene().getWidth(), anchorPane.getScene().getHeight());
-//        anchorPane.getChildren().add(line);
         alert.setHeaderText(null);
         alert.setContentText("Нажата клавиша шага алгоритма!");
         alert.showAndWait();
     }
     @FXML
     private void buttonSavePressed() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Сообщение");
-        alert.setHeaderText(null);
-        alert.setContentText("Нажата клавиша сохранения!");
-        alert.showAndWait();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setTitle("Save rezults");
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(mainwindow.getPrimaryStage());
+        if (file != null) {
+            mainwindow.writeData(file);
+        }
     }
     @FXML
     private void buttonLoadPressed() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Сообщение");
-        alert.setHeaderText(null);
-        alert.setContentText("Нажата клавиша загрузки!");
-        alert.showAndWait();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileChooser.setTitle("Open file with source data");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showOpenDialog(mainwindow.getPrimaryStage());
+        String data = null;
+        if (file != null) {
+            data = mainwindow.readData(file);
+        }
+        if(data!= null){
+            stringToButtons(data);
+        }
     }
     @FXML
     private void buttonAuthorsPressed() {
@@ -130,6 +138,7 @@ public class Controller {
         rezultButton.setDisable(false);
         informationArea.clear();
         insertDataLine.clear();
+        saveButton.setDisable(true);
     }
 
     @FXML
@@ -239,7 +248,7 @@ public class Controller {
             }
             elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
         } catch (NumberFormatException nfe) {
-            new Alert(AlertType.ERROR, "Вы ввели некорректные данные.").showAndWait();
+            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
         }
     }
 }
