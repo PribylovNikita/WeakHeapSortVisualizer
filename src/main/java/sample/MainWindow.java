@@ -23,7 +23,7 @@ public final class MainWindow {
         this.primaryStage = stage;
         try{
             FXMLLoader loader = new FXMLLoader();
-            URL xmlUrl = Main.class.getResource("sample.fxml");
+            URL xmlUrl = Main.class.getResource("/sample.fxml");
             loader.setLocation(xmlUrl);
             root = loader.load();
             Controller appController = loader.getController();
@@ -44,6 +44,7 @@ public final class MainWindow {
 
     public void startStepSort(Integer[] data, AnchorPane drawField, GridPane elemBox, TextArea informationArea, ArrayList<Controller.EditableButton> massButtonElem){
         stepHeap = new WeakHeapSteps(data,elemBox, informationArea, massButtonElem);
+        stepHeap.build();
         WeakHeapRenderer.render(stepHeap, drawField, List.of(), Paint.valueOf("RED"));
     }
 

@@ -14,7 +14,7 @@ public class WeakHeapRenderer {
 
 
     public static void render(WeakHeap wh, AnchorPane drawField, List<Integer> actionNodeIndices, Paint actionColor) {
-        if (wh.values.length < 1) return;
+        if (wh.length < 1) return;
 
         drawField.getChildren().removeAll(drawField.getChildren());
         Paint color = Paint.valueOf("IVORY");
@@ -28,7 +28,7 @@ public class WeakHeapRenderer {
 
         LinkedList<Integer> row = new LinkedList<>();
         LinkedList<Integer> new_row = new LinkedList<>();
-        int length = wh.values.length;
+        int length = wh.length;
         int height = 1 + (int) (Math.log(length) / Math.log(2));
         double curX;
         double curY = topLeftY;

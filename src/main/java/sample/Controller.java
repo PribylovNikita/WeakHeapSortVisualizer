@@ -113,9 +113,13 @@ public class Controller {
     }
     @FXML
     private void buttonInsertPressed() {
-        stringToButtons(insertDataLine.getText());
-        rezultButton.setDisable(false);
-        saveButton.setDisable(true);
+        try {
+            stringToButtons(insertDataLine.getText());
+            rezultButton.setDisable(false);
+            saveButton.setDisable(true);
+        } catch (NumberFormatException nfe) {
+            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
+        }
     }
     @FXML
     private void buttonSavePressed() {
@@ -293,21 +297,17 @@ public class Controller {
         return array;
     }
 
-    private void stringToButtons(String str) {
-        try {
-            int[] numbers = stringToIntArray(str);
-            countElem = numbers.length;
-            massButtonElem = new ArrayList<EditableButton>();
-            elemBox.getChildren().remove(0, elemBox.getChildren().size());
-            for (int i = 0; i < numbers.length; i++) {
-                massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
-                elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
-                GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
-            }
-            elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
-        } catch (NumberFormatException nfe) {
-            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
+    private void stringToButtons(String str) throws NumberFormatException {
+        int[] numbers = stringToIntArray(str);
+        countElem = numbers.length;
+        massButtonElem = new ArrayList<EditableButton>();
+        elemBox.getChildren().remove(0, elemBox.getChildren().size());
+        for (int i = 0; i < numbers.length; i++) {
+            massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
+            elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
+            GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
         }
+        elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
     }
 
     private void swapEditableButtons(EditableButton first, EditableButton second) {
@@ -322,4 +322,3 @@ public class Controller {
         System.out.println(massButtonElem);
     }
 }
-
