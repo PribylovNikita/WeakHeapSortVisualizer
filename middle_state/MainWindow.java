@@ -57,7 +57,7 @@ public final class MainWindow {
         switch (currState.state){
             case preBuilding -> {
                 if(!currState.isChanged){
-                    stepSort(drawField);
+                    return stepSort(drawField);
                 }
                 else {
                     currState.first = stepHeap.joinId1;
@@ -69,16 +69,20 @@ public final class MainWindow {
                 currState.second = stepHeap.joinId2;
             }
             case preSiftDown -> {
-                System.out.println(currState.first = stepHeap.joinId1);
+                System.out.print("preSiftDown: ");
+                System.out.println(stepHeap.joinId1);
                 currState.first = stepHeap.joinId1;
                 currState.second = 0;
             }
             case siftDown-> {
-                System.out.println(currState.first = stepHeap.joinId1);
+                System.out.print("SiftDown: ");
+                System.out.println(stepHeap.joinId1);
                 currState.first = stepHeap.joinId1;
                 currState.second = 0;
             }
             case delMin -> {
+                System.out.print("delMin: ");
+                System.out.println(stepHeap.length - 1);
                 currState.first = stepHeap.length - 1;
                 currState.second = 0;
             }
