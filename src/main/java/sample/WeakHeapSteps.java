@@ -36,18 +36,20 @@ public class WeakHeapSteps extends WeakHeap {
         initialLength = length;
     }
 
-    public void buildStep() {
+    public boolean buildStep() {
+        boolean swapped = false;
         switch (state) {
             case delMin, siftDown, built -> {}
             case building -> {
                 swapId = buildIterator;
                 buildId = this.up(buildIterator);
-                this.join(swapId, buildId);
+                swapped = this.join(swapId, buildId);
                 buildIterator--;
                 if (buildIterator < 1)
                     this.state = State.built;
             }
         }
+        return swapped;
     }
 
     @Override
@@ -56,7 +58,8 @@ public class WeakHeapSteps extends WeakHeap {
             buildStep();
     }
 
-    public void step() {
+    public boolean step() {
+        boolean swapped = false;
         switch (state) {
             case building -> {}
             case delMin, built -> {
@@ -81,7 +84,7 @@ public class WeakHeapSteps extends WeakHeap {
             case siftDown -> {
                 swapId /= 2;    // !
                 if (swapId > 0) {
-                    join(swapId, 0);
+                    swapped = join(swapId, 0);
                     //stepSwapButtons(swapId, 0, "проталкивание", "-fx-background-color: blue"); + рисовалка
                     // !
                 } else {
@@ -90,6 +93,7 @@ public class WeakHeapSteps extends WeakHeap {
             }
             default -> length = initialLength;
         }
+        return swapped;
     }
 
     @Override
