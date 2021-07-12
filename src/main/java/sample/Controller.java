@@ -22,6 +22,7 @@ public class Controller {
     private static final int MAX_ELEM_IN_ROW = 10;
     private int swapState = 0;
     private EditableButton first, second;
+    stepState currState;
 
     @FXML
     private ResourceBundle resources;
@@ -75,14 +76,76 @@ public class Controller {
         for (int i = 0; i < countElem; i++) {
             elemBox.getChildren().get(i).setDisable(true);
         }
-        mainwindow.startStepSort(data, drawField, elemBox, informationArea, massButtonElem);
+        mainwindow.startStepSort(data, drawField);
         stepButton.setDisable(false);
         loadButton.setDisable(true);
         insertButton.setDisable(true);
+        runButton.setDisable(true);
     }
     @FXML
     private void buttonStepPressed() {
-        mainwindow.stepSort(drawField);
+        if(currState==null){
+            currState = new stepState();
+        }
+        clearStyleButtons();
+        if(currState.state==null){
+            currState.state = WeakHeap.State.initial;
+            currState.first = 0;
+            currState.second = 0;
+            currState.length = 0;
+        }
+        System.out.println("first: "+ currState.first);
+        System.out.println("second: "+ currState.second);
+        System.out.println("length: "+ currState.length);
+        switch (currState.state) {
+            case preBuilding, building-> {
+                if(currState.isChanged){
+                    stepSwapButtons(currState.first, currState.second, "", "-fx-background-color: blue");
+                    informationArea.setText("Этап 1. Построение кучи\nменяем элементы "+ " "+ massButtonElem.get(currState.first).getText()+" и " + massButtonElem.get(currState.second).getText());
+                }
+                else{
+                    massButtonElem.get(currState.first).setStyle("-fx-background-color: blue");
+                    massButtonElem.get(currState.second).setStyle("-fx-background-color: blue");
+                    informationArea.setText("Этап 1. Построение кучи\nСравниваем элементы "+ massButtonElem.get(currState.first).getText()+" и "+ massButtonElem.get(currState.second).getText()+ "\n, но не меняем");
+                }
+            }
+            case built -> {
+                informationArea.setText("Этап 1. Построение кучи\nКуча построена");
+            }
+            case preSiftDown -> {
+                massButtonElem.get(currState.first).setStyle("-fx-background-color: blue");
+                massButtonElem.get(currState.second).setStyle("-fx-background-color: blue");
+                informationArea.setText("Этап 2. Сортировка\nСравниваем элементы "+ massButtonElem.get(currState.first).getText()+" и "+ massButtonElem.get(currState.second).getText());
+            }
+            case siftDown -> {
+                if(currState.isChanged) {
+                    stepSwapButtons(currState.first, currState.second, "", "-fx-background-color: blue");
+                    informationArea.setText("Этап 2. Сортировка\n поменяли элементы: "+ " "+ massButtonElem.get(currState.first).getText()+" и " + massButtonElem.get(currState.second).getText());
+                }
+                else {
+                    massButtonElem.get(currState.first).setStyle("-fx-background-color: blue");
+                    massButtonElem.get(currState.second).setStyle("-fx-background-color: blue");
+                    informationArea.setText("Этап 2. Сортировка\nНе меняем элементы "+ massButtonElem.get(currState.first).getText()+" и "+ massButtonElem.get(currState.second).getText());
+                }
+            }
+            case delMin -> {
+                stepSwapButtons(currState.first, currState.second, "Этап 2. Сортировка\nудалили корень", "-fx-background-color: green");
+                informationArea.setText("Этап 2. Сортировка\nудалили корень");
+            }
+            case done -> {
+                informationArea.setText("Этап 2. Сортировка\nДанные отсортированы!");
+                setAllButtonsStyle("-fx-background-color: green");
+                saveButton.setDisable(false);
+                insertButton.setDisable(false);
+                loadButton.setDisable(false);
+                stepButton.setDisable(true);
+                runButton.setDisable(false);
+                currState = null;
+                countElem = 0;
+                massButtonElem = null;
+            }
+        }
+        currState = mainwindow.stepSort(drawField);
     }
     @FXML
     private void buttonRezultPressed() {
@@ -113,13 +176,9 @@ public class Controller {
     }
     @FXML
     private void buttonInsertPressed() {
-        try {
-            stringToButtons(insertDataLine.getText());
-            rezultButton.setDisable(false);
-            saveButton.setDisable(true);
-        } catch (NumberFormatException nfe) {
-            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
-        }
+        stringToButtons(insertDataLine.getText());
+        rezultButton.setDisable(false);
+        saveButton.setDisable(true);
     }
     @FXML
     private void buttonSavePressed() {
@@ -173,6 +232,7 @@ public class Controller {
         loadButton.setDisable(false);
         insertButton.setDisable(false);
         stepButton.setDisable(true);
+        runButton.setDisable(false);
     }
 
     @FXML
@@ -209,11 +269,12 @@ public class Controller {
     }
 
     class EditableButton extends Button {
-        TextField tf = new TextField();
+        private TextField tf;
         final ContextMenu contextMenu = new ContextMenu();
 
         public EditableButton(String text) {
             setText(text);
+            tf = new TextField();
             MenuItem change = new MenuItem("Изменить");
             MenuItem swap = new MenuItem("Обмен");
             MenuItem delete = new MenuItem("Удалить");
@@ -256,7 +317,6 @@ public class Controller {
                 countElem--;
             });
 
-
             // настройка текстового поля
             tf.textProperty().addListener((obs) ->
                     tf.setPrefWidth(0.5 * tf.getFont().getSize() * tf.getText().length() + 30));
@@ -278,7 +338,6 @@ public class Controller {
                     tf.selectAll();
                 }
             });
-
         }
     }
 
@@ -297,17 +356,21 @@ public class Controller {
         return array;
     }
 
-    private void stringToButtons(String str) throws NumberFormatException {
-        int[] numbers = stringToIntArray(str);
-        countElem = numbers.length;
-        massButtonElem = new ArrayList<EditableButton>();
-        elemBox.getChildren().remove(0, elemBox.getChildren().size());
-        for (int i = 0; i < numbers.length; i++) {
-            massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
-            elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
-            GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
+    private void stringToButtons(String str) {
+        try {
+            int[] numbers = stringToIntArray(str);
+            countElem = numbers.length;
+            massButtonElem = new ArrayList<EditableButton>();
+            elemBox.getChildren().remove(0, elemBox.getChildren().size());
+            for (int i = 0; i < numbers.length; i++) {
+                massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
+                elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
+                GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
+            }
+            elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
+        } catch (NumberFormatException nfe) {
+            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
         }
-        elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
     }
 
     private void swapEditableButtons(EditableButton first, EditableButton second) {
@@ -321,4 +384,40 @@ public class Controller {
         elemBox.add(second, firstCol, firstRow);
         System.out.println(massButtonElem);
     }
+
+    private void clearStyleButtons(){
+        for(EditableButton a: massButtonElem){
+            if(a.getStyle().equals("-fx-background-color: blue")) {
+                a.setStyle("");
+            }
+        }
+    }
+
+    private void setAllButtonsStyle(String style){
+        for(EditableButton a: massButtonElem){
+            a.setStyle(style);
+        }
+    }
+
+    private void stepSwapButtons(int i1, int i2, String message, String color){
+        int firstRow = i1 / elemBox.getColumnCount();
+        int firstCol = i1 % elemBox.getColumnCount();
+        int secondRow = i2 / elemBox.getColumnCount();
+        int secondCol = i2 % elemBox.getColumnCount();
+        Button first = massButtonElem.get(i1);
+        Button second = massButtonElem.get(i2);
+        Collections.swap(massButtonElem, i1, i2);
+        elemBox.getChildren().removeAll(first, second);
+        elemBox.add(first, secondCol, secondRow);
+        elemBox.add(second, firstCol, firstRow);
+        //informationArea.setText(message+ " "+ first.getText()+" и " + second.getText());
+        if(color.equals("-fx-background-color: green")) {
+            second.setStyle("-fx-background-color: green");
+        }
+        else if(color.equals("-fx-background-color: blue")){
+            first.setStyle("-fx-background-color: blue");
+            second.setStyle("-fx-background-color: blue");
+        }
+    }
 }
+

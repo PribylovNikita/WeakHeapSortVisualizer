@@ -27,12 +27,12 @@
       <Button fx:id="insertButton" layoutX="385.0" layoutY="33.0" mnemonicParsing="false" onAction="#buttonInsertPressed" text="Ввод" AnchorPane.rightAnchor="272.0" />
       <Button fx:id="rezultButton" layoutX="617.0" layoutY="87.0" mnemonicParsing="false" onAction="#buttonRezultPressed" prefHeight="29.0" prefWidth="74.0" text="Результат" AnchorPane.rightAnchor="9.0" />
       <Button fx:id="stepButton" disable="true" layoutX="552.0" layoutY="89.0" mnemonicParsing="false" onAction="#buttonStepPressed" prefHeight="25.0" prefWidth="58.0" text="Шаг" AnchorPane.rightAnchor="90.0" />
-      <ScrollPane layoutX="206.0" layoutY="145.0" prefHeight="222.0" prefWidth="358.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="136.0" AnchorPane.topAnchor="145.0">
+      <ScrollPane layoutX="206.0" layoutY="145.0" prefHeight="222.0" prefWidth="284.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="145.0">
         <content>
           <AnchorPane fx:id="drawField" minHeight="0.0" minWidth="0.0" />
         </content>
       </ScrollPane>
-      <TextArea fx:id="informationArea" disable="true" layoutX="578.0" layoutY="147.0" prefHeight="157.0" prefWidth="110.0" AnchorPane.rightAnchor="12.0" />
+      <TextArea fx:id="informationArea" disable="true" layoutX="578.0" layoutY="147.0" prefHeight="157.0" prefWidth="192.0" AnchorPane.rightAnchor="12.0" />
       <ScrollPane layoutX="206.0" layoutY="61.0" prefHeight="80.0" prefWidth="284.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="210.0">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0">
