@@ -9,13 +9,17 @@ import java.util.Collections;
 
 public class WeakHeapSteps extends WeakHeap {
     public enum State {
+        building,
+        built,
         delMin,
         siftDown,
         done
     }
     public State state;
     public int swapId;
+    public int buildId;
     int initialLength;
+    int buildIterator;
     private GridPane elemBox;
     private TextArea informationArea;
     private ArrayList<Controller.EditableButton> massButtonElem;
@@ -26,14 +30,36 @@ public class WeakHeapSteps extends WeakHeap {
         this.massButtonElem = massButtonElem;
         this.elemBox = elemBox;
         this.informationArea = informationArea;
-        state = State.delMin;
+        this.buildIterator = length - 1;
+        state = State.building;
         swapId = 0;
         initialLength = length;
     }
 
+    public void buildStep() {
+        switch (state) {
+            case delMin, siftDown, built -> {}
+            case building -> {
+                swapId = buildIterator;
+                buildId = this.up(buildIterator);
+                this.join(swapId, buildId);
+                buildIterator--;
+                if (buildIterator < 1)
+                    this.state = State.built;
+            }
+        }
+    }
+
+    @Override
+    public void build() {
+        while (!state.equals(State.built))
+            buildStep();
+    }
+
     public void step() {
         switch (state) {
-            case delMin -> {
+            case building -> {}
+            case delMin, built -> {
                 if (length < 1) {
                     state = State.done;
                     break;
@@ -67,7 +93,7 @@ public class WeakHeapSteps extends WeakHeap {
     }
 
     @Override
-    void heapsort() {
+    public void heapsort() {
         while (!state.equals(State.done))
             step();
         length = initialLength;
