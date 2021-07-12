@@ -22,7 +22,7 @@ public class Controller {
     private static final int MAX_ELEM_IN_ROW = 10;
     private int swapState = 0;
     private EditableButton first, second;
-    stepState currState;
+    stepState currState = null;
 
     @FXML
     private ResourceBundle resources;
@@ -81,22 +81,21 @@ public class Controller {
         loadButton.setDisable(true);
         insertButton.setDisable(true);
         runButton.setDisable(true);
+        currState = null;
     }
     @FXML
     private void buttonStepPressed() {
         if(currState==null){
             currState = new stepState();
-        }
-        clearStyleButtons();
-        if(currState.state==null){
             currState.state = WeakHeap.State.initial;
-            currState.first = 0;
-            currState.second = 0;
+            currState.first = 0;currState.second = 0;
             currState.length = 0;
         }
+        clearStyleButtons();
         System.out.println("first: "+ currState.first);
         System.out.println("second: "+ currState.second);
         System.out.println("length: "+ currState.length);
+        System.out.println("state: "+currState.state);
         switch (currState.state) {
             case preBuilding, building-> {
                 if(currState.isChanged){
@@ -144,6 +143,9 @@ public class Controller {
                 countElem = 0;
                 massButtonElem = null;
             }
+            case initial -> {
+
+            }
         }
         currState = mainwindow.stepSort(drawField);
     }
@@ -173,6 +175,7 @@ public class Controller {
         insertButton.setDisable(false);
         loadButton.setDisable(false);
         stepButton.setDisable(true);
+        runButton.setDisable(false);
     }
     @FXML
     private void buttonInsertPressed() {
@@ -233,6 +236,7 @@ public class Controller {
         insertButton.setDisable(false);
         stepButton.setDisable(true);
         runButton.setDisable(false);
+        drawField.getChildren().clear();
     }
 
     @FXML
