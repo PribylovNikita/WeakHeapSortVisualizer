@@ -34,7 +34,7 @@ public class WeakHeapRenderer {
         text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
         drawField.getChildren().add(text);
 
-        text = new Text(topLeftX, topLeftY+3 + radius*1.5, wh.values[0] + " (" + wh.bits[0] + ")");
+        text = new Text(topLeftX, topLeftY+3 + radius*1.5, 0 + " (" + wh.bits[0] + ")");
         text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
         text.setFont(Font.font(10));
         drawField.getChildren().add(text);
