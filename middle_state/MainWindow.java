@@ -13,8 +13,10 @@ import java.util.List;
 public final class MainWindow {
     private Stage primaryStage;
     private AnchorPane root;
-    private WeakHeap heap;
     private WeakHeap stepHeap;
+    private WeakHeap.State prevState;
+    private stepState currState;
+
 
     public MainWindow(Stage stage) {
         this.primaryStage = stage;
@@ -33,66 +35,99 @@ public final class MainWindow {
         primaryStage.show();
     }
     public int[] sort(Integer[] data){
-        heap = new WeakHeap(data);
-        heap.build();
-        heap.heapsort();
-        return heap.values;
+        stepHeap = new WeakHeap(data);
+        stepHeap.build();
+        stepHeap.heapsort();
+        return stepHeap.values;
     }
 
     public void startStepSort(Integer[] data, AnchorPane drawField){
+        stepHeap = null;
         stepHeap = new WeakHeap(data);
+        currState = new stepState();
         WeakHeapRenderer.render(stepHeap, drawField, List.of(), Paint.valueOf("RED"));
     }
 
     public stepState stepSort(AnchorPane drawField){
-        stepState currState = new stepState();
         currState.state = stepHeap.state;
-        if(currState.state == WeakHeap.State.preBuilding || currState.state == WeakHeap.State.building){
-            currState.isChanged = stepHeap.buildStep();
-        }
-        else {
-            currState.isChanged = stepHeap.heapsortStep();
-        }
-        currState.length = stepHeap.length;
-        switch (currState.state){
-            case preBuilding -> {
-                if(!currState.isChanged){
-                    return stepSort(drawField);
-                }
-                else {
+        switch (currState.state) {
+            case preBuilding, building -> {
+                currState.first = stepHeap.joinId1;
+                currState.second = stepHeap.joinId2;
+                WeakHeapRenderer.render(stepHeap, drawField, List.of(currState.first, currState.second),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
+                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                        Paint.valueOf("LIGHTBLUE"));
+                currState.isChanged = stepHeap.buildStep(); // made a step
+                currState.first = stepHeap.joinId1;
+                currState.second = stepHeap.joinId2;
+                prevState = currState.state;
+            }
+            case built -> {
+                currState.first = stepHeap.joinId1;
+                currState.second = stepHeap.joinId2;
+                WeakHeapRenderer.render(stepHeap, drawField,
+                        List.of(currState.first, currState.second),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
+                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                        Paint.valueOf("LIGHTBLUE"));
+                currState.isChanged = stepHeap.heapsortStep(); // made a step
+                prevState = currState.state;
+            }
+            case delMin -> {
+                currState.first = stepHeap.length - 1;
+                currState.second = stepHeap.joinId2;
+                WeakHeapRenderer.render(stepHeap, drawField, List.of(0), Paint.valueOf("PURPLE"));
+                currState.isChanged = stepHeap.heapsortStep(); // made a step
+                prevState = currState.state;
+            }
+            case preSiftDown -> {
+                if (prevState == WeakHeap.State.delMin) {
+                    System.out.println("prev state = delmin");
+                    WeakHeapRenderer.render(stepHeap, drawField);
                     currState.first = stepHeap.joinId1;
                     currState.second = stepHeap.joinId2;
+                } else {
+                    currState.first = stepHeap.joinId1;
+                    if (currState.first != currState.first / 2 * 2 + stepHeap.bits[currState.first / 2]) {
+                        currState.first = currState.first / 2 * 2 + stepHeap.bits[currState.first / 2];
+                    }
+                    currState.second = 0;
+                    WeakHeapRenderer.render(stepHeap, drawField,
+                            List.of(currState.first, currState.second),
+                            currState.isChanged ? Paint.valueOf("PINK") : Paint.valueOf("YELLOW"),
+                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                            Paint.valueOf("AQUA"));
                 }
-            }
-            case building, built-> {
+                prevState = currState.state;
+                currState.isChanged = stepHeap.heapsortStep();
                 currState.first = stepHeap.joinId1;
                 currState.second = stepHeap.joinId2;
             }
-            case preSiftDown -> {
-                System.out.print("preSiftDown: ");
-                System.out.println(stepHeap.joinId1);
-                currState.first = stepHeap.joinId1;
-                currState.second = 0;
-            }
-            case siftDown-> {
-                System.out.print("SiftDown: ");
-                System.out.println(stepHeap.joinId1);
-                currState.first = stepHeap.joinId1;
-                currState.second = 0;
-            }
-            case delMin -> {
-                System.out.print("delMin: ");
-                System.out.println(stepHeap.length - 1);
-                currState.first = stepHeap.length - 1;
-                currState.second = 0;
+            case siftDown -> {
+                if (prevState == WeakHeap.State.delMin) {
+                    System.out.println("prev state = delmin");
+                    WeakHeapRenderer.render(stepHeap, drawField);
+                    currState.first = stepHeap.joinId1;
+                    currState.second = stepHeap.joinId2;
+                } else {
+                    currState.first = stepHeap.joinId1;
+                    currState.second = 0;
+                    WeakHeapRenderer.render(stepHeap, drawField,
+                            List.of(currState.first, currState.second),
+                            currState.isChanged ? Paint.valueOf("PINK") : Paint.valueOf("YELLOW"),
+                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                            Paint.valueOf("AQUA"));
+                    prevState = currState.state;
+                    currState.isChanged = stepHeap.heapsortStep(); // made a step
+                }
             }
             case done -> {
-
+                WeakHeapRenderer.render(stepHeap, drawField);
             }
         }
         return currState;
     }
-
     public Stage getPrimaryStage() {
         return primaryStage;
     }
@@ -100,8 +135,8 @@ public final class MainWindow {
         FileIO loadFile = new FileIO(source);
         return loadFile.readFromFile();
     }
-    public void writeData(File destination){
+    public void writeData(File destination, int[] data){
         FileIO saveFile = new FileIO(destination);
-        saveFile.writeToFile(heap.values);
+        saveFile.writeToFile(data);
     }
 }

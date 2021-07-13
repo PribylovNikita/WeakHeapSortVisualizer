@@ -4,28 +4,42 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.*;
 
 public class WeakHeapRenderer {
-    private static double radius = 20;
-    private static double topLeftX = 4*radius, topLeftY = 4*radius;
+    private static final double radius = 20;
+    private static final double topLeftX = 3*radius, topLeftY = 3*radius;
 
-
-    public static void render(WeakHeap wh, AnchorPane drawField, List<Integer> actionNodeIndices, Paint actionColor) {
-        if (wh.length < 1) return;
+    public static void render(WeakHeap wh, AnchorPane drawField,
+                              List<Integer> actionNodes, Paint actionColor,
+                              List<Integer> childrenOfActionNodes, Paint actionColorForChildren) {
+        if (wh.length < 1 || drawField == null) return;
+        if (actionNodes == null) actionNodes = List.of();
+        if (childrenOfActionNodes == null) childrenOfActionNodes = List.of();
 
         drawField.getChildren().removeAll(drawField.getChildren());
         Paint color = Paint.valueOf("IVORY");
         Line line;
-        Text text = new Text(topLeftX, topLeftY+3, Integer.toString(wh.values[0]));
-        text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
-        Circle circle = new Circle(topLeftX, topLeftY, radius, actionNodeIndices.contains(0) ? actionColor : color);
+        Text text;
+        Circle circle;
 
+        // draw root
+        circle = new Circle(topLeftX, topLeftY, radius, actionNodes.contains(0) ? actionColor : color);
         drawField.getChildren().add(circle);
+
+        text = new Text(topLeftX, topLeftY+3, Integer.toString(wh.values[0]));
+        text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
         drawField.getChildren().add(text);
 
+        text = new Text(topLeftX, topLeftY+3 + radius*1.5, 0 + " (" + wh.bits[0] + ")");
+        text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
+        text.setFont(Font.font(10));
+        drawField.getChildren().add(text);
+
+        // prep for drawing the rest
         LinkedList<Integer> row = new LinkedList<>();
         LinkedList<Integer> new_row = new LinkedList<>();
         int length = wh.length;
@@ -46,18 +60,30 @@ public class WeakHeapRenderer {
                     new_row.addLast(null);
                     new_row.addLast(null);
                 } else {
+                    // draw line from child to parent
                     line = new Line(curX, curY, (wh.bits[node/2] + node%2) % 2 == 0 ? curX+cellWidth/2 : curX-cellWidth/2, curY-cellHeight);
                     drawField.getChildren().add(line);
                     line.toBack();
 
-                    drawField.getChildren().add(new Circle(curX, curY, radius, actionNodeIndices.contains(node) ? actionColor : color));
+                    // draw child
+                    drawField.getChildren().add(new Circle(curX, curY, radius,
+                            actionNodes.contains(node) ? actionColor :
+                                    childrenOfActionNodes.contains(node) ? actionColorForChildren : color));
 
+                    // draw value
                     text = new Text(curX,curY+3, Integer.toString(wh.values[node]));
                     text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
                     drawField.getChildren().add(text);
 
-                    new_row.addLast(2 * node + wh.bits[node]);     // add Left child
-                    new_row.addLast(2 * node + 1 - wh.bits[node]);   // add right child
+                    // draw index + bit
+                    text = new Text(curX, curY+3 + radius*1.5, node + " (" + wh.bits[node] + ")");
+                    text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
+                    text.setFont(Font.font(10));
+                    drawField.getChildren().add(text);
+
+                    // prep next children
+                    new_row.addLast(2 * node + wh.bits[node]); // add Left child
+                    new_row.addLast(2 * node + 1 - wh.bits[node]); // add right child
                 }
             }
             row = new_row;
@@ -65,6 +91,14 @@ public class WeakHeapRenderer {
             cellWidth /= 2;
         }
 
+    }
+
+    public static void render(WeakHeap wh, AnchorPane drawField, List<Integer> actionNodes, Paint actionColor) {
+        render(wh, drawField, actionNodes, actionColor, List.of(), Paint.valueOf("BLACK"));
+    }
+
+    public static void render(WeakHeap wh, AnchorPane drawField) {
+        render(wh, drawField, List.of(), Paint.valueOf("BLACK"), List.of(), Paint.valueOf("BLACK"));
     }
 
 }

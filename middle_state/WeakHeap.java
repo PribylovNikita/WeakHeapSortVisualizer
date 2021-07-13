@@ -1,5 +1,8 @@
 package sample;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WeakHeap {
     // Data structure fields
     int length;
@@ -11,6 +14,7 @@ public class WeakHeap {
 
     // Algorithm fields
     public enum State {
+        initial,
         preBuilding,
         building,
         built,
@@ -100,7 +104,10 @@ public class WeakHeap {
         switch (state) {
             case preBuilding, building -> {
             }
-            case built, delMin -> {
+            case built -> {
+                state = State.delMin;
+            }
+            case delMin -> {
                 if (length < 2) {   // length == 0 or length == 1
                     state = State.done;
                     break;
@@ -114,11 +121,13 @@ public class WeakHeap {
                 joinId2 = 0;
                 while (2 * joinId1 + bits[joinId1] < length)
                     joinId1 = 2 * joinId1 + bits[joinId1];     // left Child
+                //joinId1*=2;
                 if (length == 1) {
                     state = State.done;
                 }
             }
             case preSiftDown -> {
+                //joinId1 /= 2;
                 state = State.siftDown;
             }
             case siftDown -> {
@@ -134,9 +143,27 @@ public class WeakHeap {
         return swapped;
     }
 
+    public List<Integer> allChildrenOf(int id) {
+        ArrayList<Integer> lst = new ArrayList<Integer>(List.of());
+        if (id*2 < length && id*2 > 0) {
+            lst.add(id*2);
+
+            lst.addAll(allChildrenOf(id * 2));
+
+        }
+        if (id*2+1 < length) {
+            lst.add(id*2+1);
+            lst.addAll(allChildrenOf(id*2+1));
+        }
+        return lst;
+    }
+
     public boolean buildStep() {
         boolean swapped = false;
         switch (state) {
+            case initial -> {
+                state = State.preBuilding;
+            }
             case preBuilding -> {
                 if (buildIterator < 1)
                     state = State.built;
@@ -159,3 +186,20 @@ public class WeakHeap {
         return swapped;
     }
 }
+/*//joinId1*=2;
+                if (length == 1) {
+                    state = State.done;
+                }
+            }
+            case preSiftDown -> {
+                //joinId1 /= 2;
+                state = State.siftDown;
+            }
+            case siftDown -> {
+                swapped = join(joinId1, joinId2);
+                joinId1 /= 2;
+                if (joinId1 > 0)
+                    state = State.siftDown;
+                else
+                    state = State.delMin;
+            }*/
