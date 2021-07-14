@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <Label fx:id="menuLabel" layoutX="44.0" layoutY="78.0" prefHeight="29.0" prefWidth="81.0" text="Меню" AnchorPane.leftAnchor="44.0">
             <font>
@@ -25,15 +18,15 @@
         <Button fx:id="exitButton" layoutX="44.0" layoutY="207.0" mnemonicParsing="false" onAction="#buttonExitPressed" prefHeight="25.0" prefWidth="74.0" text="Выход" AnchorPane.leftAnchor="44.0" />
         <TextField fx:id="insertDataLine" layoutX="216.0" layoutY="33.0" prefHeight="25.0" prefWidth="159.0" AnchorPane.leftAnchor="216.0" AnchorPane.rightAnchor="325.0" />
         <Button fx:id="insertButton" layoutX="385.0" layoutY="33.0" mnemonicParsing="false" onAction="#buttonInsertPressed" text="Ввод" AnchorPane.rightAnchor="272.0" />
-        <Button fx:id="rezultButton" layoutX="617.0" layoutY="87.0" mnemonicParsing="false" onAction="#buttonRezultPressed" prefHeight="29.0" prefWidth="74.0" text="Результат" AnchorPane.rightAnchor="9.0" />
-        <Button fx:id="stepButton" disable="true" layoutX="552.0" layoutY="89.0" mnemonicParsing="false" onAction="#buttonStepPressed" prefHeight="25.0" prefWidth="58.0" text="Шаг" AnchorPane.rightAnchor="90.0" />
-        <ScrollPane layoutX="206.0" layoutY="145.0" prefHeight="222.0" prefWidth="358.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="136.0" AnchorPane.topAnchor="145.0">
+        <Button fx:id="rezultButton" layoutX="602.0" layoutY="19.0" mnemonicParsing="false" onAction="#buttonRezultPressed" prefHeight="29.0" prefWidth="74.0" text="Результат" AnchorPane.rightAnchor="24.0" />
+        <Button fx:id="stepButton" disable="true" layoutX="610.0" layoutY="66.0" mnemonicParsing="false" onAction="#buttonStepPressed" prefHeight="25.0" prefWidth="58.0" text="Шаг" AnchorPane.rightAnchor="32.0" />
+        <ScrollPane layoutX="206.0" layoutY="145.0" prefHeight="222.0" prefWidth="284.0" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="145.0">
             <content>
                 <AnchorPane fx:id="drawField" minHeight="0.0" minWidth="0.0" />
             </content>
         </ScrollPane>
-        <TextArea fx:id="informationArea" disable="true" layoutX="578.0" layoutY="147.0" prefHeight="157.0" prefWidth="110.0" AnchorPane.rightAnchor="12.0" />
-        <ScrollPane layoutX="206.0" layoutY="61.0" prefHeight="80.0" prefWidth="284.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="210.0">
+        <TextArea fx:id="informationArea" disable="true" layoutX="578.0" layoutY="147.0" prefHeight="157.0" prefWidth="192.0" AnchorPane.rightAnchor="12.0" />
+        <ScrollPane fx:id="scrPane" layoutX="206.0" layoutY="65.0" prefHeight="76.0" prefWidth="284.0" AnchorPane.leftAnchor="206.0" AnchorPane.rightAnchor="210.0">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0">
                     <children>
@@ -52,7 +45,8 @@
                 </AnchorPane>
             </content>
         </ScrollPane>
-        <Button fx:id="clearButton" layoutX="497.0" layoutY="89.0" mnemonicParsing="false" onAction="#buttonClearPressed" text="Сброс" AnchorPane.rightAnchor="152.0" />
-        <Button fx:id="runButton" layoutX="497.0" layoutY="23.0" mnemonicParsing="false" onAction="#buttonRunPressed" prefHeight="46.0" prefWidth="110.0" text="Запуск" AnchorPane.rightAnchor="93.0" />
+        <Button fx:id="clearButton" layoutX="610.0" layoutY="105.0" mnemonicParsing="false" onAction="#buttonClearPressed" prefHeight="29.0" prefWidth="58.0" text="Сброс" AnchorPane.rightAnchor="32.0" />
+        <Button fx:id="runButton" layoutX="493.0" layoutY="10.0" mnemonicParsing="false" onAction="#buttonRunPressed" prefHeight="46.0" prefWidth="91.0" text="Запуск" AnchorPane.rightAnchor="116.0" />
+        <Button fx:id="prevStepButton" disable="true" layoutX="496.0" layoutY="59.0" mnemonicParsing="false" onAction="#prevStepButtonPressed" prefHeight="39.0" prefWidth="100.0" text="Предыдущий &#10;        шаг" textAlignment="JUSTIFY" AnchorPane.rightAnchor="104.0" />
     </children>
 </AnchorPane>
