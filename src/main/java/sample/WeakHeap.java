@@ -24,7 +24,7 @@ public class WeakHeap {
         done
     }
 
-    public State state = WeakHeap.State.preBuilding;
+    public State state = State.preBuilding;
     public int joinId1 = 0;
     public int joinId2 = 0;
     int initialLength;
@@ -100,9 +100,12 @@ public class WeakHeap {
     }
 
     public boolean heapsortStep() {
+        if (length < 2) {
+            state = State.done;
+        }
         boolean swapped = false;
         switch (state) {
-            case preBuilding, building -> {
+            case initial, preBuilding, building -> {
             }
             case built -> {
                 state = State.delMin;
@@ -147,9 +150,7 @@ public class WeakHeap {
         ArrayList<Integer> lst = new ArrayList<Integer>(List.of());
         if (id*2 < length && id*2 > 0) {
             lst.add(id*2);
-
-            lst.addAll(allChildrenOf(id * 2));
-
+            lst.addAll(allChildrenOf(id*2));
         }
         if (id*2+1 < length) {
             lst.add(id*2+1);
@@ -160,6 +161,9 @@ public class WeakHeap {
 
     public boolean buildStep() {
         boolean swapped = false;
+        if (length < 2) {
+            state = State.built;
+        }
         switch (state) {
             case initial -> {
                 state = State.preBuilding;
@@ -186,20 +190,3 @@ public class WeakHeap {
         return swapped;
     }
 }
-/*//joinId1*=2;
-                if (length == 1) {
-                    state = State.done;
-                }
-            }
-            case preSiftDown -> {
-                //joinId1 /= 2;
-                state = State.siftDown;
-            }
-            case siftDown -> {
-                swapped = join(joinId1, joinId2);
-                joinId1 /= 2;
-                if (joinId1 > 0)
-                    state = State.siftDown;
-                else
-                    state = State.delMin;
-            }*/

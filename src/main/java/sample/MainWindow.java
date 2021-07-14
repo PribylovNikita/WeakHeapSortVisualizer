@@ -15,20 +15,20 @@ public final class MainWindow {
     private AnchorPane root;
     private WeakHeap stepHeap;
     private WeakHeap.State prevState;
-    private stepState currState = new stepState();
+    private stepState currState;
 
 
     public MainWindow(Stage stage) {
         this.primaryStage = stage;
         try{
             FXMLLoader loader = new FXMLLoader();
-            URL xmlUrl = Main.class.getResource("sample.fxml");
+            URL xmlUrl = Main.class.getResource("/sample.fxml");
             loader.setLocation(xmlUrl);
             root = loader.load();
             Controller appController = loader.getController();
             appController.setMainWindow(this);
         } catch (Exception e) {
-            System.exit(0);
+            System.exit(1);
         }
         primaryStage.setTitle("Сортировка слабой кучей(v:1)");
         primaryStage.setScene(new Scene(root, 700, 400));
@@ -42,48 +42,11 @@ public final class MainWindow {
     }
 
     public void startStepSort(Integer[] data, AnchorPane drawField){
+        stepHeap = null;
         stepHeap = new WeakHeap(data);
-        WeakHeapRenderer.render(stepHeap, drawField, List.of(), Paint.valueOf("RED"));
+        currState = new stepState();
+        WeakHeapRenderer.render(stepHeap, drawField);
     }
-
-    /*public stepState stepSort(AnchorPane drawField){
-        stepState currState = new stepState();
-        currState.state = stepHeap.state;
-        currState.first = stepHeap.joinId1;
-        currState.second = stepHeap.joinId2;
-        currState.length = stepHeap.length;
-        if(currState.state == WeakHeap.State.preBuilding || currState.state == WeakHeap.State.building){
-            currState.isChanged = stepHeap.buildStep();
-        }
-        else {
-            currState.isChanged = stepHeap.heapsortStep();
-        }
-        switch (currState.state){
-            case preSiftDown -> {
-                System.out.println();
-                System.out.print("preSiftDown: ");
-                System.out.println(currState.first);
-                currState.first = stepHeap.joinId1;
-                currState.second = stepHeap.joinId2;
-            }
-            case siftDown-> {
-                System.out.print("SiftDown: ");
-                System.out.println(stepHeap.joinId1);
-                currState.first = stepHeap.joinId1;
-                currState.second = 0;
-            }
-            case delMin -> {
-                System.out.print("delMin: ");
-                System.out.println(stepHeap.length);
-                currState.first = stepHeap.length;
-                currState.second = 0;
-            }
-            case done -> {
-
-            }
-        }
-        return currState;
-    }*/
 
     public stepState stepSort(AnchorPane drawField){
         currState.state = stepHeap.state;
@@ -92,8 +55,8 @@ public final class MainWindow {
                 currState.first = stepHeap.joinId1;
                 currState.second = stepHeap.joinId2;
                 WeakHeapRenderer.render(stepHeap, drawField, List.of(currState.first, currState.second),
-                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("LIGHTGREEN"),
-                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
+                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                         Paint.valueOf("LIGHTBLUE"));
                 currState.isChanged = stepHeap.buildStep(); // made a step
                 currState.first = stepHeap.joinId1;
@@ -105,35 +68,38 @@ public final class MainWindow {
                 currState.second = stepHeap.joinId2;
                 WeakHeapRenderer.render(stepHeap, drawField,
                         List.of(currState.first, currState.second),
-                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("LIGHTGREEN"),
-                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
+                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                         Paint.valueOf("LIGHTBLUE"));
                 currState.isChanged = stepHeap.heapsortStep(); // made a step
                 prevState = currState.state;
             }
             case delMin -> {
+                WeakHeapRenderer.render(stepHeap, drawField,
+                        List.of(currState.first, currState.second),
+                        currState.isChanged ? Paint.valueOf("PINK") : null,
+                        currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
+                        Paint.valueOf("AQUA"));
                 currState.first = stepHeap.length - 1;
                 currState.second = stepHeap.joinId2;
-                WeakHeapRenderer.render(stepHeap, drawField, List.of(0), Paint.valueOf("PURPLE"));
                 currState.isChanged = stepHeap.heapsortStep(); // made a step
                 prevState = currState.state;
             }
             case preSiftDown -> {
                 if (prevState == WeakHeap.State.delMin) {
-                    System.out.println("prev state = delmin");
                     WeakHeapRenderer.render(stepHeap, drawField);
                     currState.first = stepHeap.joinId1;
                     currState.second = stepHeap.joinId2;
                 } else {
-                    currState.first = stepHeap.joinId1;
+                    //currState.first = stepHeap.joinId1;
                     if (currState.first != currState.first / 2 * 2 + stepHeap.bits[currState.first / 2]) {
                         currState.first = currState.first / 2 * 2 + stepHeap.bits[currState.first / 2];
                     }
-                    currState.second = 0;
+                    //currState.second = stepHeap.joinId2;
                     WeakHeapRenderer.render(stepHeap, drawField,
                             List.of(currState.first, currState.second),
                             currState.isChanged ? Paint.valueOf("PINK") : Paint.valueOf("YELLOW"),
-                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                             Paint.valueOf("AQUA"));
                 }
                 prevState = currState.state;
@@ -143,17 +109,16 @@ public final class MainWindow {
             }
             case siftDown -> {
                 if (prevState == WeakHeap.State.delMin) {
-                    System.out.println("prev state = delmin");
                     WeakHeapRenderer.render(stepHeap, drawField);
                     currState.first = stepHeap.joinId1;
                     currState.second = stepHeap.joinId2;
                 } else {
                     currState.first = stepHeap.joinId1;
-                    currState.second = 0;
+                    currState.second = stepHeap.joinId2;
                     WeakHeapRenderer.render(stepHeap, drawField,
                             List.of(currState.first, currState.second),
                             currState.isChanged ? Paint.valueOf("PINK") : Paint.valueOf("YELLOW"),
-                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : List.of(),
+                            currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                             Paint.valueOf("AQUA"));
                     prevState = currState.state;
                     currState.isChanged = stepHeap.heapsortStep(); // made a step
@@ -161,7 +126,6 @@ public final class MainWindow {
             }
             case done -> {
                 WeakHeapRenderer.render(stepHeap, drawField);
-
             }
         }
         return currState;
@@ -173,8 +137,8 @@ public final class MainWindow {
         FileIO loadFile = new FileIO(source);
         return loadFile.readFromFile();
     }
-    public void writeData(File destination){
+    public void writeData(File destination, int[] data){
         FileIO saveFile = new FileIO(destination);
-        saveFile.writeToFile(stepHeap.values);
+        saveFile.writeToFile(data);
     }
 }

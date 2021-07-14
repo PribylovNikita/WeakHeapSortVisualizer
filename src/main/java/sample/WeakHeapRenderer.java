@@ -19,7 +19,7 @@ public class WeakHeapRenderer {
                               List<Integer> childrenOfActionNodes, Paint actionColorForChildren) {
         if (drawField == null) return;
         if (wh.length < 1) {
-            clear(drawField);
+            drawField.getChildren().clear();
             return;
         }
         if (actionNodes == null) actionNodes = List.of();
@@ -27,14 +27,13 @@ public class WeakHeapRenderer {
         if (childrenOfActionNodes == null) childrenOfActionNodes = List.of();
         if (actionColorForChildren == null) actionColorForChildren = defaultColor;
 
-        clear(drawField);
-        Paint color = defaultColor;
+        drawField.getChildren().clear();
         Line line;
         Text text;
         Circle circle;
 
         // draw root
-        circle = new Circle(topLeftX, topLeftY, radius, actionNodes.contains(0) ? actionColor : color);
+        circle = new Circle(topLeftX, topLeftY, radius, actionNodes.contains(0) ? actionColor : defaultColor);
         drawField.getChildren().add(circle);
 
         text = new Text(topLeftX, topLeftY+3, Integer.toString(wh.values[0]));
@@ -75,7 +74,7 @@ public class WeakHeapRenderer {
                     // draw child
                     drawField.getChildren().add(new Circle(curX, curY, radius,
                             actionNodes.contains(node) ? actionColor :
-                                    childrenOfActionNodes.contains(node) ? actionColorForChildren : color));
+                                    childrenOfActionNodes.contains(node) ? actionColorForChildren : defaultColor));
 
                     // draw value
                     text = new Text(curX,curY+3, Integer.toString(wh.values[node]));
@@ -106,11 +105,6 @@ public class WeakHeapRenderer {
 
     public static void render(WeakHeap wh, AnchorPane drawField) {
         render(wh, drawField, List.of(), defaultColor, List.of(), defaultColor);
-    }
-
-    public static void clear(AnchorPane drawField) {
-        if (drawField == null) return;
-        drawField.getChildren().removeAll(drawField.getChildren());
     }
 
 }
