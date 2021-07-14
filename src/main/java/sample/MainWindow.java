@@ -30,7 +30,7 @@ public final class MainWindow {
         } catch (Exception e) {
             System.exit(1);
         }
-        primaryStage.setTitle("Сортировка слабой кучей(v:1)");
+        primaryStage.setTitle("Визуализатор сортировки слабой кучей");
         primaryStage.setScene(new Scene(root, 700, 400));
         primaryStage.show();
     }

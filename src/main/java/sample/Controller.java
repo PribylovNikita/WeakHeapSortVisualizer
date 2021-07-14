@@ -154,22 +154,22 @@ public class Controller {
                 second.setTextFill(Paint.valueOf("WHITE"));
                 first.setStyle("-fx-background-color: blue");
                 second.setStyle("-fx-background-color: blue");
-                informationArea.setText("Этап 1. Построение кучи\nСравниваем элементы "+ " "+ second.getText()+" и " + first.getText());
+                informationArea.setText("Этап 1. Построение кучи\nСравниваем элементы:\n"+ second.getText()+" и " + first.getText());
             }
             case building-> {
                 if(currState.isChanged){
                     swapEditableButtons(first, second,"-fx-background-color: orange");
                     first.setTextFill(Paint.valueOf("WHITE"));
                     second.setTextFill(Paint.valueOf("WHITE"));
-                    informationArea.setText("Этап 1. Построение кучи\nМеняем элементы "+ " "+ second.getText()+" и " + first.getText()
-                            + "\nМеняем бит у элемента " + second.getText());
+                    informationArea.setText("Этап 1. Построение кучи\nМеняем элементы:\n"+ second.getText()+" и " + first.getText()
+                            + "\nМеняем бит у элемента:\n" + second.getText());
                 }
                 else{
                     first.setStyle("-fx-background-color: blue");
                     second.setStyle("-fx-background-color: blue");
                     first.setTextFill(Paint.valueOf("WHITE"));
                     second.setTextFill(Paint.valueOf("WHITE"));
-                    informationArea.setText("Этап 1. Построение кучи\nНе меняем элементы "+ second.getText()+" и "+ first.getText());
+                    informationArea.setText("Этап 1. Построение кучи\nНе меняем элементы:\n"+ second.getText()+" и "+ first.getText());
                 }
             }
             case built -> {
@@ -178,16 +178,16 @@ public class Controller {
             case preSiftDown -> {
                 first.setStyle("-fx-background-color: yellow");
                 second.setStyle("-fx-background-color: yellow");
-                informationArea.setText("Этап 2. Сортировка\nСравниваем элементы "+ second.getText()+" и "+ first.getText());
+                informationArea.setText("Этап 2. Сортировка\nСравниваем элементы:\n"+ second.getText()+" и "+ first.getText());
             }
             case siftDown -> {
                 if(currState.isChanged) {
                     swapEditableButtons(first, second, "");
-                    informationArea.setText("Этап 2. Сортировка\nМеняем элементы "+ " "+ second.getText()+" и " + first.getText()
-                            + "\nМеняем бит у элемента " + second.getText());
+                    informationArea.setText("Этап 2. Сортировка\nМеняем элементы:\n"+ second.getText()+" и " + first.getText()
+                            + "\nМеняем бит у элемента\n" + second.getText());
                 }
                 else {
-                    informationArea.setText("Этап 2. Сортировка\nНе меняем элементы "+ second.getText()+" и "+ first.getText());
+                    informationArea.setText("Этап 2. Сортировка\nНе меняем элементы:\n"+ second.getText()+" и "+ first.getText());
                 }
             }
             case delMin -> {
