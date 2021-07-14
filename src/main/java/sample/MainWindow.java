@@ -55,7 +55,7 @@ public final class MainWindow {
                 currState.first = stepHeap.joinId1;
                 currState.second = stepHeap.joinId2;
                 WeakHeapRenderer.render(stepHeap, drawField, List.of(currState.first, currState.second),
-                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("YELLOW"),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
                         currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                         Paint.valueOf("LIGHTBLUE"));
                 currState.isChanged = stepHeap.buildStep(); // made a step
@@ -68,7 +68,7 @@ public final class MainWindow {
                 currState.second = stepHeap.joinId2;
                 WeakHeapRenderer.render(stepHeap, drawField,
                         List.of(currState.first, currState.second),
-                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("YELLOW"),
+                        currState.isChanged ? Paint.valueOf("ORANGE") : Paint.valueOf("BLUE"),
                         currState.isChanged ? stepHeap.allChildrenOf(currState.first) : null,
                         Paint.valueOf("LIGHTBLUE"));
                 currState.isChanged = stepHeap.heapsortStep(); // made a step

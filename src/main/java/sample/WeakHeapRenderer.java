@@ -17,7 +17,7 @@ public class WeakHeapRenderer {
     public static void render(WeakHeap wh, AnchorPane drawField,
                               List<Integer> actionNodes, Paint actionColor,
                               List<Integer> childrenOfActionNodes, Paint actionColorForChildren) {
-        if (drawField == null) return;
+        if (wh == null || drawField == null) return;
         if (wh.length < 1) {
             drawField.getChildren().clear();
             return;
@@ -38,6 +38,9 @@ public class WeakHeapRenderer {
 
         text = new Text(topLeftX, topLeftY+3, Integer.toString(wh.values[0]));
         text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
+        if (circle.getFill() == Paint.valueOf("BLUE")) {
+            text.setFill(Paint.valueOf("WHITE"));
+        }
         drawField.getChildren().add(text);
 
         text = new Text(topLeftX, topLeftY+3 + radius*1.5, 0 + " (" + wh.bits[0] + ")");
@@ -72,14 +75,19 @@ public class WeakHeapRenderer {
                     line.toBack();
 
                     // draw child
-                    drawField.getChildren().add(new Circle(curX, curY, radius,
+                    circle = new Circle(curX, curY, radius,
                             actionNodes.contains(node) ? actionColor :
-                                    childrenOfActionNodes.contains(node) ? actionColorForChildren : defaultColor));
+                                    childrenOfActionNodes.contains(node) ? actionColorForChildren : defaultColor);
+                    drawField.getChildren().add(circle);
 
                     // draw value
+
                     text = new Text(curX,curY+3, Integer.toString(wh.values[node]));
                     text.setX(text.getX() - text.getLayoutBounds().getWidth()/2);
-                    drawField.getChildren().add(text);
+                    if (circle.getFill() == Paint.valueOf("BLUE")) {
+                        text.setFill(Paint.valueOf("WHITE"));
+                    }
+                        drawField.getChildren().add(text);
 
                     // draw index + bit
                     text = new Text(curX, curY+3 + radius*1.5, node + " (" + wh.bits[node] + ")");
