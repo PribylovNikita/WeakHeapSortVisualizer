@@ -30,6 +30,7 @@ public class Controller {
     private Stage prevStepStage;
     private PrevStepController prevStepController;
 
+
     @FXML
     private ResourceBundle resources;
     @FXML
@@ -67,7 +68,7 @@ public class Controller {
     @FXML
     private Button prevStepButton;
     @FXML
-    private ScrollPane testtt;
+    private ScrollPane scrPane;
     @FXML
     void initialize() {
         //создание дополнительного окна
@@ -75,7 +76,7 @@ public class Controller {
         AnchorPane root = null;
         try{
             FXMLLoader loader = new FXMLLoader();
-            URL xmlUrl = Main.class.getResource("prevStepWindow.fxml");
+            URL xmlUrl = Main.class.getResource("/prevStepWindow.fxml");
             loader.setLocation(xmlUrl);
             root = loader.load();
             prevStepController = loader.getController();
@@ -84,23 +85,27 @@ public class Controller {
         }
         prevStepStage.setTitle("Предыдущий шаг");
         prevStepStage.setScene(new Scene(root, 700, 400));
-        //обработчик изменения размера окна
-        testtt.widthProperty().addListener((obs, oldVal, newVal) -> {
+
+        scrPane.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (massButtonElem != null) {
-                if (testtt.getWidth() > 300) {
+                if (scrPane.getWidth() > 300) {
                     int sum = 0;
                     for (EditableButton b : massButtonElem) {
                         sum += b.getWidth();
                     }
                     int ar = sum / massButtonElem.size();
-                    MAX_ELEM_IN_ROW = (int) (testtt.getWidth() / (ar * 1.05));
+                    MAX_ELEM_IN_ROW = (int) (scrPane.getWidth() / (ar * 1.05));
                     elemBox.getChildren().clear();
-                    elemBox.getChildren().add(addElemButton);
+                    if (currState == null) {
+                        elemBox.getChildren().add(addElemButton);
+                    }
                     for (int i = 0; i < massButtonElem.size(); i++) {
                         GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
                         elemBox.getChildren().remove(addElemButton);
                         elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW,i / MAX_ELEM_IN_ROW);
-                        elemBox.add(addElemButton, (i+1) % MAX_ELEM_IN_ROW, (i+1) / MAX_ELEM_IN_ROW);
+                        if (currState == null) {
+                            elemBox.add(addElemButton, (i + 1) % MAX_ELEM_IN_ROW, (i + 1) / MAX_ELEM_IN_ROW);
+                        }
                     }
                 }
             }
@@ -143,7 +148,7 @@ public class Controller {
         first = massButtonElem.get(currState.first);
         second = massButtonElem.get(currState.second);
         switch (currState.state) {
-            case preBuilding ->{
+            case preBuilding -> {
                 first.setTextFill(Paint.valueOf("WHITE"));
                 second.setTextFill(Paint.valueOf("WHITE"));
                 first.setStyle("-fx-background-color: blue");
@@ -155,7 +160,8 @@ public class Controller {
                     swapEditableButtons(first, second,"-fx-background-color: orange");
                     first.setTextFill(Paint.valueOf("WHITE"));
                     second.setTextFill(Paint.valueOf("WHITE"));
-                    informationArea.setText("Этап 1. Построение кучи\nМеняем элементы "+ " "+ second.getText()+" и " + first.getText());
+                    informationArea.setText("Этап 1. Построение кучи\nМеняем элементы "+ " "+ second.getText()+" и " + first.getText()
+                            + "\nМеняем бит у элемента " + second.getText());
                 }
                 else{
                     first.setStyle("-fx-background-color: blue");
@@ -176,7 +182,8 @@ public class Controller {
             case siftDown -> {
                 if(currState.isChanged) {
                     swapEditableButtons(first, second, "");
-                    informationArea.setText("Этап 2. Сортировка\nПоменяли элементы: "+ " "+ second.getText()+" и " + first.getText());
+                    informationArea.setText("Этап 2. Сортировка\nМеняем элементы "+ " "+ second.getText()+" и " + first.getText()
+                            + "\nМеняем бит у элемента " + second.getText());
                 }
                 else {
                     informationArea.setText("Этап 2. Сортировка\nНе меняем элементы "+ second.getText()+" и "+ first.getText());
@@ -184,7 +191,7 @@ public class Controller {
             }
             case delMin -> {
                 swapEditableButtons(first, second, "-fx-background-color: green");
-                informationArea.setText("Этап 2. Сортировка\nудалили корень");
+                informationArea.setText("Этап 2. Сортировка\nУдаляем корень\nСтавим на место корня\nпоследний элемент: " + first.getText());
             }
             case done -> {
                 informationArea.setText("Этап 2. Сортировка\nДанные отсортированы!");
@@ -241,7 +248,11 @@ public class Controller {
     }
     @FXML
     private void buttonInsertPressed() {
-        stringToButtons(insertDataLine.getText());
+        try {
+            stringToButtons(insertDataLine.getText());
+        } catch (NumberFormatException nfe) {
+            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
+        }
         rezultButton.setDisable(false);
         saveButton.setDisable(false);
     }
@@ -276,8 +287,12 @@ public class Controller {
         if (file != null) {
             data = mainwindow.readData(file);
         }
-        if(data!= null){
-            stringToButtons(data);
+        if(data != null){
+            try {
+                stringToButtons(data);
+            } catch (NumberFormatException nfe) {
+                new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
+            }
         }
     }
     @FXML
@@ -306,6 +321,7 @@ public class Controller {
         prevStepButton.setDisable(true);
         runButton.setDisable(false);
         drawField.getChildren().clear();
+        currState = null;
     }
 
     @FXML
@@ -429,21 +445,17 @@ public class Controller {
         return array;
     }
 
-    private void stringToButtons(String str) {
-        try {
-            int[] numbers = stringToIntArray(str);
-            countElem = numbers.length;
-            massButtonElem = new ArrayList<EditableButton>();
-            elemBox.getChildren().remove(0, elemBox.getChildren().size());
-            for (int i = 0; i < numbers.length; i++) {
-                massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
-                elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
-                GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
-            }
-            elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
-        } catch (NumberFormatException nfe) {
-            new Alert(AlertType.ERROR, "Введены некорректные данные.").showAndWait();
+    private void stringToButtons(String str) throws NumberFormatException {
+        int[] numbers = stringToIntArray(str);
+        countElem = numbers.length;
+        massButtonElem = new ArrayList<EditableButton>();
+        elemBox.getChildren().remove(0, elemBox.getChildren().size());
+        for (int i = 0; i < numbers.length; i++) {
+            massButtonElem.add(new EditableButton(Integer.toString(numbers[i])));
+            elemBox.add(massButtonElem.get(i), i % MAX_ELEM_IN_ROW, i / MAX_ELEM_IN_ROW);
+            GridPane.setHalignment(massButtonElem.get(i), HPos.CENTER);
         }
+        elemBox.add(addElemButton, countElem % MAX_ELEM_IN_ROW, countElem / MAX_ELEM_IN_ROW);
     }
 
     private void swapEditableButtons(EditableButton first, EditableButton second, String color) {
@@ -482,4 +494,3 @@ public class Controller {
     }
 
 }
-
