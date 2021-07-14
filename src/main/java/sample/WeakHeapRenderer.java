@@ -12,16 +12,23 @@ import java.util.*;
 public class WeakHeapRenderer {
     private static final double radius = 20;
     private static final double topLeftX = 3*radius, topLeftY = 3*radius;
+    private static final Paint defaultColor = Paint.valueOf("IVORY");
 
     public static void render(WeakHeap wh, AnchorPane drawField,
                               List<Integer> actionNodes, Paint actionColor,
                               List<Integer> childrenOfActionNodes, Paint actionColorForChildren) {
-        if (wh.length < 1 || drawField == null) return;
+        if (drawField == null) return;
+        if (wh.length < 1) {
+            clear(drawField);
+            return;
+        }
         if (actionNodes == null) actionNodes = List.of();
+        if (actionColor == null) actionColor = defaultColor;
         if (childrenOfActionNodes == null) childrenOfActionNodes = List.of();
+        if (actionColorForChildren == null) actionColorForChildren = defaultColor;
 
-        drawField.getChildren().removeAll(drawField.getChildren());
-        Paint color = Paint.valueOf("IVORY");
+        clear(drawField);
+        Paint color = defaultColor;
         Line line;
         Text text;
         Circle circle;
@@ -94,11 +101,16 @@ public class WeakHeapRenderer {
     }
 
     public static void render(WeakHeap wh, AnchorPane drawField, List<Integer> actionNodes, Paint actionColor) {
-        render(wh, drawField, actionNodes, actionColor, List.of(), Paint.valueOf("BLACK"));
+        render(wh, drawField, actionNodes, actionColor, List.of(), defaultColor);
     }
 
     public static void render(WeakHeap wh, AnchorPane drawField) {
-        render(wh, drawField, List.of(), Paint.valueOf("BLACK"), List.of(), Paint.valueOf("BLACK"));
+        render(wh, drawField, List.of(), defaultColor, List.of(), defaultColor);
+    }
+
+    public static void clear(AnchorPane drawField) {
+        if (drawField == null) return;
+        drawField.getChildren().removeAll(drawField.getChildren());
     }
 
 }
