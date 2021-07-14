@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -15,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class Controller {
     private MainWindow mainwindow;
@@ -24,6 +27,8 @@ public class Controller {
     private int swapState = 0;
     private EditableButton first, second;
     stepState currState = null;
+    private Stage prevStepStage;
+    private PrevStepController prevStepController;
 
     @FXML
     private ResourceBundle resources;
@@ -60,9 +65,26 @@ public class Controller {
     @FXML
     private Button runButton;
     @FXML
+    private Button prevStepButton;
+    @FXML
     private ScrollPane testtt;
     @FXML
     void initialize() {
+        //создание дополнительного окна
+        prevStepStage = new Stage();
+        AnchorPane root = null;
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            URL xmlUrl = Main.class.getResource("prevStepWindow.fxml");
+            loader.setLocation(xmlUrl);
+            root = loader.load();
+            prevStepController = loader.getController();
+        } catch (Exception e) {
+            System.exit(0);
+        }
+        prevStepStage.setTitle("Предыдущий шаг");
+        prevStepStage.setScene(new Scene(root, 700, 400));
+        //обработчик изменения размера окна
         testtt.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (massButtonElem != null) {
                 if (testtt.getWidth() > 300) {
@@ -101,6 +123,7 @@ public class Controller {
         }
         mainwindow.startStepSort(data, drawField);
         stepButton.setDisable(false);
+        prevStepButton.setDisable(false);
         loadButton.setDisable(true);
         insertButton.setDisable(true);
         runButton.setDisable(true);
@@ -115,6 +138,7 @@ public class Controller {
             currState.first = 0;currState.second = 0;
             currState.length = 0;
         }
+        prevStepController.setPrevStepState(massButtonElem, informationArea.getText(), drawField.getChildren());
         clearStyleButtons();
         first = massButtonElem.get(currState.first);
         second = massButtonElem.get(currState.second);
@@ -169,6 +193,7 @@ public class Controller {
                 insertButton.setDisable(false);
                 loadButton.setDisable(false);
                 stepButton.setDisable(true);
+                prevStepButton.setDisable(true);
                 runButton.setDisable(false);
                 currState = null;
                 countElem = 0;
@@ -179,6 +204,10 @@ public class Controller {
             }
         }
         currState = mainwindow.stepSort(drawField);
+    }
+    @FXML
+    void prevStepButtonPressed() {
+        prevStepStage.show();
     }
     @FXML
     private void buttonRezultPressed() {
@@ -207,6 +236,7 @@ public class Controller {
         insertButton.setDisable(false);
         loadButton.setDisable(false);
         stepButton.setDisable(true);
+        prevStepButton.setDisable(true);
         runButton.setDisable(false);
     }
     @FXML
@@ -273,6 +303,7 @@ public class Controller {
         loadButton.setDisable(false);
         insertButton.setDisable(false);
         stepButton.setDisable(true);
+        prevStepButton.setDisable(true);
         runButton.setDisable(false);
         drawField.getChildren().clear();
     }
