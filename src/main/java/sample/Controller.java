@@ -302,9 +302,15 @@ public class Controller {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Авторы");
         alert.setHeaderText(null);
-        alert.setContentText("Данное приложение написали студенты ФКТИ ЛЭТИ:\nПтичкин Сергей, GUI" +
-                "\nПрибылов Никита, Сборка, тестирование, визуализация алгоритма\nНоздрин Василий, " +
-                "алгоритм сортировки, файловый ввод/вывод\n\nПреподаватель: Фирсов Михаил Александрович");
+        alert.setContentText("""
+                Данное приложение написали студенты ФКТИ ЛЭТИ:
+                Птичкин Сергей: GUI, файловый ввод/вывод
+                Прибылов Никита: визуализация алгоритма, тестирование, сборка
+                Ноздрин Василий: алгоритм сортировки
+
+                Преподаватель: Фирсов Михаил Александрович""");
+        alert.getDialogPane().setMinWidth(550);
+        alert.setResizable(true);
         alert.showAndWait();
     }
     @FXML
@@ -385,8 +391,8 @@ public class Controller {
                 При нажатии кнопки "Загрузка" будет выведено окно, предлагающее считать данные из файла с расширением ".txt".
                 В файле должны быть данные, представленные символами чисел, разделённых исключительно пробелами.
                 Если будет введён отличный от пробела и цифр символ, данные не будут считаны.""");
-        //alert.setResizable(true);
-        alert.getDialogPane().setMinWidth(800);
+        alert.setResizable(true);
+        alert.getDialogPane().setMinWidth(1000);
         alert.showAndWait();
     }
 
